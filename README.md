@@ -25,8 +25,10 @@ The project is divided into two main parts:
 
 ## Getting Started 🚀
 
-### 1. Backend Setup
-Navigate to the `backend` directory and install the required Python packages.
+### 1. Backend Setup (Optional - Hosted on Hugging Face)
+The backend for this project is currently hosted on Hugging Face. If you want to run the frontend against the hosted backend, you can skip this step!
+
+If you prefer to run the backend locally, navigate to the `backend` directory and install the required Python packages.
 
 ```bash
 cd backend
