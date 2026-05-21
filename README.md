@@ -52,7 +52,7 @@ GROQ_API_KEY=your_groq_api_key
 
 Start the FastAPI server:
 ```bash
-uvicorn main:app --reload --port 8000
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 2. Frontend Setup

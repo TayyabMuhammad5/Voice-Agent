@@ -3,7 +3,9 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 
 
-const WS_URL = "ws://localhost:8000/ws/audio";
+const WS_URL = typeof window !== "undefined" 
+  ? `ws://${window.location.hostname}:8000/ws/audio`
+  : "ws://127.0.0.1:8000/ws/audio";
 const SAMPLE_RATE = 48000;
 const BUFFER_SIZE = 4096; // ~85ms chunks at 48kHz
 
