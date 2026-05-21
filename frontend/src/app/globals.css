@@ -1,0 +1,619 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Voice AI Agent — Design System
+   Premium dark-mode UI with glassmorphism, gradients, and micro-animations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS Custom Properties ──────────────────────────────────────────────── */
+:root {
+  /* Core palette — sleek blackish dark mode */
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-card: transparent;
+  --bg-card-hover: transparent;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.2);
+
+  /* Text */
+  --text-primary: #f0f0f5;
+  --text-secondary: #8a8a9a;
+  --text-muted: #55556a;
+
+  /* Accents */
+  --accent: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.4);
+  --accent-light: #a78bfa;
+  --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #4f46e5 100%);
+  
+  /* Status colors */
+  --green: #34d399;
+  --green-glow: rgba(52, 211, 153, 0.3);
+  --red: #f87171;
+  --red-glow: rgba(248, 113, 113, 0.3);
+  --amber: #fbbf24;
+
+  /* Spacing */
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ambient background glow - Removed for minimalist look */
+body::before, body::after {
+  display: none;
+}
+
+/* ─── Agent Container (Card-less layout) ─────────────────────────────────── */
+.agent-container {
+  position: relative;
+  z-index: 1;
+  width: 100vw; /* Force full viewport width (capped by max-width) instead of shrinking to content */
+  max-width: 800px; /* Wider for full screen feel */
+  height: 100vh; /* Full screen height */
+  padding: 40px;
+  display: flex;
+  flex-direction: column; /* Stack vertically */
+  /* Removed background, borders, and shadows to make it card-less */
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.agent-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.agent-logo {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-gradient);
+  border-radius: 14px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.agent-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.agent-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Status Badge ───────────────────────────────────────────────────────── */
+.status-badge {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 100px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.status-badge.active {
+  border-color: rgba(52, 211, 153, 0.25);
+  background: rgba(52, 211, 153, 0.08);
+  color: var(--green);
+}
+
+.status-badge.active .status-dot {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+.status-badge.connecting {
+  border-color: rgba(251, 191, 36, 0.25);
+  background: rgba(251, 191, 36, 0.08);
+  color: var(--amber);
+}
+
+.status-badge.connecting .status-dot {
+  background: var(--amber);
+  animation: pulse-dot 0.8s ease-in-out infinite;
+}
+
+.status-badge.error {
+  border-color: rgba(248, 113, 113, 0.25);
+  background: rgba(248, 113, 113, 0.08);
+  color: var(--red);
+}
+
+.status-badge.error .status-dot {
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ─── Orb Visualizer ─────────────────────────────────────────────────────── */
+.visualizer-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.orb {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-subtle);
+  transition: all 0.6s ease;
+}
+
+.orb-ring-1 { inset: 0; }
+.orb-ring-2 { inset: -16px; opacity: 0.5; }
+.orb-ring-3 { inset: -32px; opacity: 0.25; }
+
+/* Active state — breathing rings */
+.orb-active .orb-ring-1 {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accent-glow), inset 0 0 30px var(--accent-glow);
+  animation: breathe-1 3s ease-in-out infinite;
+}
+
+.orb-active .orb-ring-2 {
+  border-color: rgba(139, 92, 246, 0.3);
+  animation: breathe-2 3s ease-in-out infinite;
+  opacity: 1;
+}
+
+.orb-active .orb-ring-3 {
+  border-color: rgba(139, 92, 246, 0.15);
+  animation: breathe-3 3s ease-in-out infinite;
+  opacity: 1;
+}
+
+/* Connecting state */
+.orb-connecting .orb-ring-1 {
+  border-color: var(--amber);
+  animation: spin 2s linear infinite;
+  border-top-color: transparent;
+}
+
+@keyframes breathe-1 {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.8; }
+}
+
+@keyframes breathe-2 {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+@keyframes breathe-3 {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.14); opacity: 0.15; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.orb-core {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 24px var(--accent-glow);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.orb-active .orb-core {
+  box-shadow: 0 4px 40px var(--accent-glow), 0 0 80px rgba(139, 92, 246, 0.2);
+}
+
+.visualizer-label {
+  margin-top: 28px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* ─── Compact Orb (Phase 2+) ─────────────────────────────────────────────── */
+.visualizer-area.compact {
+  margin-bottom: 20px;
+}
+
+.orb-sm {
+  width: 80px;
+  height: 80px;
+}
+
+.orb-core-sm {
+  width: 44px;
+  height: 44px;
+}
+
+.visualizer-area.compact .orb-ring-2 { inset: -10px; }
+.visualizer-area.compact .orb-ring-3 { display: none; }
+
+.visualizer-area.compact .visualizer-label {
+  margin-top: 16px;
+  font-size: 0.78rem;
+}
+
+/* ─── Conversation Area ──────────────────────────────────────────────────── */
+.conversation-area {
+  flex: 1; /* Grow to fill all empty space */
+  margin-bottom: 24px;
+  border: none;
+  background: transparent;
+  animation: fadeIn 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Keep scroll inside */
+}
+
+.conversation-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0; /* Remove horizontal padding so text aligns with edges */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar styling */
+.conversation-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.conversation-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.conversation-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.conversation-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.conversation-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+/* ─── Message Bubbles (Now Card-less) ────────────────────────────────────── */
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: messageIn 0.3s ease;
+  padding: 8px 0;
+}
+
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.message.user .message-label {
+  color: var(--accent-light);
+}
+
+.message.assistant .message-label {
+  color: var(--green);
+}
+
+.message-text {
+  font-size: 1rem; /* Larger, clearer text */
+  line-height: 1.6;
+  padding: 0;
+  border-radius: 0;
+  word-wrap: break-word;
+}
+
+.message.user .message-text {
+  background: rgba(255, 255, 255, 0.08); /* Box for questions */
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: inline-block; /* Hug the text */
+  max-width: 85%; /* Don't stretch full width */
+}
+
+.message.assistant .message-text {
+  background: none; /* No box for AI */
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.15rem; /* Prominent AI response */
+  font-weight: 400;
+  padding: 8px 0;
+}
+
+/* Interim transcript (user is currently speaking) */
+.message.interim .message-text {
+  background: rgba(255, 255, 255, 0.03); /* Faded box for interim */
+  border: 1px dashed var(--border-subtle);
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  max-width: 85%;
+}
+
+.message.interim .message-label {
+  color: var(--text-muted);
+}
+
+/* Streaming AI response — typing cursor */
+.message.streaming .message-text {
+  border: none;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--green);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Interrupted response */
+.message.interrupted .message-text {
+  opacity: 0.5;
+}
+
+.interrupted-badge {
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--red);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+/* ─── Controls ───────────────────────────────────────────────────────────── */
+.controls {
+  margin-bottom: 0;
+  flex-shrink: 0; /* Never shrink the button */
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-start {
+  background: var(--accent-gradient);
+  color: white;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.btn-start:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px var(--accent-glow);
+}
+
+.btn-start:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-stop {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--red);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.btn-stop:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Stats Grid ─────────────────────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-active);
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Error Banner ───────────────────────────────────────────────────────── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-xs);
+  color: var(--red);
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ─── Phase Info ─────────────────────────────────────────────────────────── */
+.phase-info {
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.phase-info strong {
+  color: var(--accent-light);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .agent-container {
+    margin: 16px;
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .orb {
+    width: 120px;
+    height: 120px;
+  }
+
+  .orb-core {
+    width: 60px;
+    height: 60px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,40 @@
+# Environments
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Node / JS / Frontend
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Mac / OS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Sensitive / Keys
+*.pem
+*.key
+*.cert
+*.crt
